@@ -21,6 +21,8 @@ class Facebook():
     with open(config_path, "r") as config:
       self.CONFIG_YAML = yaml.loads(config, Loader=yaml.SafeLoader)
 
+    self.ExchangeShortForLongToken()
+
 
     self.SendRequest()
 
