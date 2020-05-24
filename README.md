@@ -1,4 +1,4 @@
-Facebook API handler for sending and receiving common transactions. 
+Facebook API handler automates token management for sending and receiving common transactions. 
 
 Official Facbook Graph API [documentation](https://developers.facebook.com/docs/graph-api/reference/user).  
 
