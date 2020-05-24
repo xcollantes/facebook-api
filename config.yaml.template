@@ -1,0 +1,5 @@
+user_id: "***REMOVED***"
+app_id: "***REMOVED***"
+# client_token: "***REMOVED***"
+short_lived_user_token: ""
+long_lived_user_token: "***REMOVED***"
