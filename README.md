@@ -7,5 +7,7 @@ Official Facebook Graph API [documentation](https://developers.facebook.com/docs
 1. Find user info and place in `config.yaml`. //(TODO): Facebook API UI instructions. 
 1. 
 
-# Functions
+# Class methods
 
+## SendRequest
+**Usage:** `SendRequest({flag_key: flag_value})`
