@@ -5,26 +5,25 @@ from requests import HTTPError
 import requests
 import logging
 import yaml
+import json
 
-basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.DEBUG,
             format="[%(levelname)s] %(asctime)s: %(message)s",
             datefmt="%Y-%d-%m %H:%M:%S %z")
+
+HOST = "https://graph.facebook.com/"
 
 class Facebook():
   """Interact with Facebook handler."""
 
-  HOST = "https://graph.facebook.com/"
-
-  def __init__(self, config_path="configs.yaml"):
+  def __init__(self, config_path="config.yaml"):
     self.CONFIG_PATH = config_path
 
     with open(config_path, "r") as config:
-      self.CONFIG_YAML = yaml.loads(config, Loader=yaml.SafeLoader)
-
-    self.ExchangeShortForLongToken()
+      self.CONFIG_YAML = yaml.load(config, Loader=yaml.SafeLoader)
 
 
-    self.SendRequest()
+    logging.info(self.SendRequest())
 
 
   
@@ -37,9 +36,16 @@ class Facebook():
     Returns:
       HTTP response or error.
     """
-    host = HOST + f"/{config['user_id']}/"
+    host = HOST + f"/{self.CONFIG_YAML['user_id']}/"
+
+    token = None
+    if self.CONFIG_YAML['long_lived_user_token']:
+      token = self.CONFIG_YAML['long_lived_user_token']
+    else:
+      token = self.CONFIG_YAML['short_lived_user_token']
+
     params = {"fields": "id,name",
-              "access_token": config['user_token']}
+              "access_token": token}
   
     params.update(url_params)
     
@@ -70,7 +76,7 @@ class Facebook():
                                       'client_id': self.CONFIG_YAML['app_id'],
                                       'client_secret': self.CONFIG_YAML['secret'],
                                       'fb_exchange_token': self.CONFIG_YAML['short_lived_user_token'],
-                                      'access_token': self.CONFIG_YAML['short_lived_user_token'])
+                                      'access_token': self.CONFIG_YAML['short_lived_user_token']})
 
       response.raise_for_status
 
@@ -82,10 +88,12 @@ class Facebook():
 
     logging.info(f"Exchange finished. Loading long lived token in config file {self.CONFIG_PATH}.")
 
-    with open(self.CONFIG_PATH, "ar") as config:
-      config.write(f"long_lived_token: {response.text}  # PROGRAM GENERATED TOKEN")
+    with open(self.CONFIG_PATH, "a") as config:
+      config.write(f"long_lived_user_token: {response.text}  # PROGRAM GENERATED TOKEN \n")
       logging.info(f"Added long lived token.")
 
+
+    with open(self.CONFIG_PATH, "r") as config:
       logging.info("Refreshing config file to use new data.")
       self.CONFIG_YAML = yaml.load(config, Loader=yaml.SafeLoader)
 
