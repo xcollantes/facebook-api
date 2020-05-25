@@ -23,7 +23,7 @@ class Facebook():
       self.CONFIG_YAML = yaml.load(config, Loader=yaml.SafeLoader)
 
 
-    logging.info(self.SendRequest())
+    #  logging.info(self.SendRequest())
 
 
   
@@ -66,6 +66,11 @@ class Facebook():
     Short lived token lasts for several hours, a long lived lasts for 
     two months. Long lived token appended to config file.  
     """
+    logging.info(f"Checking for long lived token in {self.CONFIG_PATH}")
+    if self.CONFIG_YAML['long_lived_user_token']:
+      logging.info(f"Long lived token found in {self.CONFIG_PATH}.")
+      return
+
     auth_host = HOST + "/oauth/access_token"
 
     logging.info(f"Exchanging short lived token in config file with long lived token \
@@ -96,5 +101,27 @@ class Facebook():
     with open(self.CONFIG_PATH, "r") as config:
       logging.info("Refreshing config file to use new data.")
       self.CONFIG_YAML = yaml.load(config, Loader=yaml.SafeLoader)
+
+
+    def GetTokenInfo(self):
+      """Return metadata on short or long lived token.
+
+      TODO: Finds short lived and long lived tokens if they exist,
+      makes a call to Facebook, then returns data.
+
+      Returns:
+        Time when token will expire, amount of time before the token
+        expires, and if this is a signed request.
+      """
+      try:
+        short = self.CONFIG_YAML['short_lived_user_token']
+        long = self.CONFIG_YAML['long_lived_user_token']
+      except yaml.YAMLError as ye:
+        logging.error(f"Could not find either short or long lived \
+                       token in config file. {ye}")
+
+      
+
+fb = Facebook()
 
 
