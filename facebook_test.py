@@ -3,7 +3,7 @@
 
 from unittest.mock import Mock
 from unittest.mock import patch
-from facebook import Facebook
+from facebookapi import Facebook
 import yaml
 import unittest
 
