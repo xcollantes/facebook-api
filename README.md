@@ -17,11 +17,11 @@ Official Facebook Graph API [documentation](https://developers.facebook.com/docs
 
 **(Optional) Exchange short lived token for long lived token**
 
-Short lived token
-: Token expiring in 24 hours.
+  Short lived token
+  : Token expiring in 24 hours.
 
-Long lived token
-: Token expiring in two months. 
+  Long lived token
+  : Token expiring in two months. 
 
 
 # Class methods
@@ -29,5 +29,16 @@ Long lived token
 ## SendRequest
 **Usage**
 `<my_fb_connection>.SendRequest(dictionary_of_fields)` 
+
+Accepts a dictionary of parameters. 
+
+Returns a string object.  
+
+For example, 
+```
+{
+    'fields': 'birthday,email,hometown',
+}
+```
 
 ([docs](https://developers.facebook.com/docs/graph-api/using-graph-api/#reading))
