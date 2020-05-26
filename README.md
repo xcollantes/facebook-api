@@ -27,18 +27,26 @@ Official Facebook Graph API [documentation](https://developers.facebook.com/docs
 # Class methods
 
 ## SendRequest
-**Usage**
 `<my_fb_connection>.SendRequest(dictionary_of_fields)` 
 
 Accepts a dictionary of parameters. 
-
-Returns a string object.  
-
-For example, 
 ```
 {
     'fields': 'birthday,email,hometown',
 }
 ```
+
+Returns a string object.  
+```
+{
+  "name": "Tester McTestface",
+  "hometown": "Cleaveland, Ohio"
+  "birthday": "01/01/1970",
+  "email": "mctestface@facebook.com",
+  "id": "{your-user-id}"
+}
+```
+
+
 
 ([docs](https://developers.facebook.com/docs/graph-api/using-graph-api/#reading))
