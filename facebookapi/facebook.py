@@ -1,5 +1,6 @@
 """Facebook API Handler."""
 
+__author__ = "Xavier Collantes"
 
 from requests import HTTPError
 import requests
@@ -21,10 +22,6 @@ class Facebook():
 
     with open(config_path, "r") as config:
       self.CONFIG_YAML = yaml.load(config, Loader=yaml.SafeLoader)
-
-
-    #  logging.info(self.SendRequest())
-
 
   
   def SendRequest(self, url_params={}):
@@ -120,8 +117,5 @@ class Facebook():
         logging.error(f"Could not find either short or long lived \
                        token in config file. {ye}")
 
-      
-
-fb = Facebook()
 
 
