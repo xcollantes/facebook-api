@@ -24,7 +24,7 @@ class Facebook():
       self.CONFIG_YAML = yaml.load(config, Loader=yaml.SafeLoader)
 
   
-  def SendRequest(self, url_params={}):
+  def SendRequest(self, url_params={}, get_all_pages=True):
     """Wrapper for sending GET to Facebook.
   
     Args:
@@ -46,16 +46,53 @@ class Facebook():
   
     params.update(url_params)
     
-    try:
-      response = requests.get(host, params=params)
-      logging.info(f"Sending to Facebook: {response.status_code}")
-  
-      response.encoding = "utf-8"
-      return json.dumps(response.text, indent=4)
-  
-    except HTTPError as e:
-      return e
+    return self.request_all_pages(host, params=params)
 
+
+  def request_all_pages(self, host, params={}):
+    """Traverse the return pages until no data is returned.
+
+    Facebook API return will have a number of return objects and 
+    each return will contain the next page of results in the response. 
+    The value is another URI to call for next results.  This function 
+    keeps calling the next link and appends the results to an object 
+    which it will return.
+
+    Returns:
+      The entire set of results with pages appended to a single object. 
+    """
+    appended_response = {}
+    per_page_response = None
+
+    try:
+      per_page_response = requests.get(host, params=params)
+      json_per_page_response = per_page_response.json()
+      logging.debug(f"RESPONSE: {json_per_page_response}")
+    except HTTPError as he:
+      logging.error(f"Error on first call of page for multiple pages. {he}")
+
+    while 'posts' or 'paging' in json_per_page_response:
+      logging.debug(f"Multiple pages in response, calling next page.")
+      json_per_page_response = per_page_response.json()
+      appended_response.update(json_per_page_response)
+
+      if 'posts' in json_per_page_response:  # This will occur for first response only. 
+        next_url = json_per_page_response['posts']['paging']['next']
+      if 'paging' in json_per_page_response:
+        next_url = json_per_page_response['paging']['next']
+      else:
+        logging.warning(f"Facebook API format unknown.")
+
+      try:
+        per_page_response = requests.get(next_url)
+        json_per_page_response = per_page_response.json()
+      except HTTPError as he:
+        logging.error(f"Error with call of next page for link. {he}")
+
+    logging.debug(f"{appended_response}")
+    return appended_response
+
+    
 
   def ExchangeShortForLongToken(self):
     """Short lived token replaced with long lived.
@@ -118,4 +155,7 @@ class Facebook():
                        token in config file. {ye}")
 
 
-
+fb = Facebook('../config.yaml')
+r = fb.SendRequest(url_params={"fields": "id,name,posts.include_hidden(false){via,caption,name,status_type,target,timeline_visibility,is_hidden}"})
+with open("output.txt", "w+") as f:
+  f.write(str(f.text))
